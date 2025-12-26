@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { Search, Filter, Download } from 'lucide-react';
+import { Search, Filter, Download, AlertTriangle } from 'lucide-react';
 import { Loan } from '../types';
 import LoanCard from './LoanCard';
+import Watchlist from './Watchlist';
 
 interface DashboardProps {
   loans: Loan[];
   onTrade: (loan: Loan) => void;
   onViewDetails: (loan: Loan) => void;
   onExport: () => void;
+  watchlist: string[];
+  onToggleWatch: (loanId: string) => void;
 }
 
-export default function Dashboard({ loans, onTrade, onViewDetails, onExport }: DashboardProps) {
+export default function Dashboard({ loans, onTrade, onViewDetails, onExport, watchlist, onToggleWatch }: DashboardProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -46,7 +49,28 @@ export default function Dashboard({ loans, onTrade, onViewDetails, onExport }: D
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      {/* Problem Statement Banner */}
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl p-4 text-white">
+        <div className="flex items-center gap-4">
+          <AlertTriangle className="w-8 h-8 flex-shrink-0" />
+          <div>
+            <h3 className="font-bold">The Problem We're Solving</h3>
+            <p className="text-sm text-amber-100">Loan trading today takes 7+ days to settle with zero real-time visibility. LoanLedger brings stock-market transparency to the $1.4 trillion syndicated loan market.</p>
+          </div>
+          <div className="flex gap-4 ml-auto">
+            <div className="text-center">
+              <p className="text-2xl font-bold">T+7</p>
+              <p className="text-xs text-amber-200">Current Settlement</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-green-300">T+1</p>
+              <p className="text-xs text-amber-200">With LoanLedger</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-5 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
           <p className="text-sm text-slate-500">Available Loans</p>
           <p className="text-2xl font-bold text-slate-900">{filteredLoans.length}</p>
@@ -66,6 +90,10 @@ export default function Dashboard({ loans, onTrade, onViewDetails, onExport }: D
           <p className="text-2xl font-bold text-green-600">
             {filteredLoans.filter(l => l.isGreen).length}
           </p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+          <p className="text-sm text-slate-500">Watching</p>
+          <p className="text-2xl font-bold text-purple-600">{watchlist.length}</p>
         </div>
       </div>
 
@@ -122,17 +150,37 @@ export default function Dashboard({ loans, onTrade, onViewDetails, onExport }: D
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {filteredLoans.map((loan) => (
-          <LoanCard key={loan.id} loan={loan} onTrade={onTrade} onViewDetails={onViewDetails} />
-        ))}
-      </div>
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-2 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            {filteredLoans.map((loan) => (
+              <LoanCard 
+                key={loan.id} 
+                loan={loan} 
+                onTrade={onTrade} 
+                onViewDetails={onViewDetails}
+                isWatched={watchlist.includes(loan.id)}
+                onToggleWatch={onToggleWatch}
+              />
+            ))}
+          </div>
 
-      {filteredLoans.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
-          <p className="text-slate-500">No loans match your filters</p>
+          {filteredLoans.length === 0 && (
+            <div className="text-center py-12 bg-white rounded-xl border border-slate-200">
+              <p className="text-slate-500">No loans match your filters</p>
+            </div>
+          )}
         </div>
-      )}
+
+        <div>
+          <Watchlist 
+            loans={loans} 
+            watchlist={watchlist} 
+            onToggleWatch={onToggleWatch}
+            onTrade={onTrade}
+          />
+        </div>
+      </div>
     </div>
   );
 }

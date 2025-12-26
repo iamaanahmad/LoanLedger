@@ -1,10 +1,12 @@
-import { Leaf, AlertTriangle, TrendingUp, Eye } from 'lucide-react';
+import { Leaf, AlertTriangle, TrendingUp, Eye, EyeOff } from 'lucide-react';
 import { Loan } from '../types';
 
 interface LoanCardProps {
   loan: Loan;
   onTrade: (loan: Loan) => void;
   onViewDetails?: (loan: Loan) => void;
+  isWatched?: boolean;
+  onToggleWatch?: (loanId: string) => void;
 }
 
 const riskColors: Record<string, string> = {
@@ -25,7 +27,7 @@ const formatCurrency = (amount: number, currency: string) => {
   }).format(amount);
 };
 
-export default function LoanCard({ loan, onTrade, onViewDetails }: LoanCardProps) {
+export default function LoanCard({ loan, onTrade, onViewDetails, isWatched, onToggleWatch }: LoanCardProps) {
   const isHighRisk = loan.defaultProbability > 5;
 
   return (
@@ -43,9 +45,24 @@ export default function LoanCard({ loan, onTrade, onViewDetails }: LoanCardProps
           </div>
           <p className="text-sm text-slate-500">{loan.sector} • {loan.loanType}</p>
         </div>
-        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${riskColors[loan.riskRating]}`}>
-          {loan.riskRating}
-        </span>
+        <div className="flex items-center gap-2">
+          {onToggleWatch && (
+            <button
+              onClick={() => onToggleWatch(loan.id)}
+              className={`p-1.5 rounded-lg transition-colors ${
+                isWatched 
+                  ? 'bg-purple-100 text-purple-600' 
+                  : 'hover:bg-slate-100 text-slate-400'
+              }`}
+              title={isWatched ? 'Remove from watchlist' : 'Add to watchlist'}
+            >
+              {isWatched ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          )}
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${riskColors[loan.riskRating]}`}>
+            {loan.riskRating}
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">

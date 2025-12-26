@@ -53,3 +53,13 @@ export interface MarketStats {
   avgYield: number;
   greenLoansPercent: number;
 }
+
+export interface Notification {
+  id: string;
+  type: 'trade' | 'price' | 'watchlist' | 'compliance';
+  title: string;
+  message: string;
+  timestamp: Date;
+  read: boolean;
+  loanId?: string;
+}
