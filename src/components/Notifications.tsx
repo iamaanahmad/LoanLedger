@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, X, TrendingUp, Eye, Shield, DollarSign } from 'lucide-react';
+import { Bell, TrendingUp, Eye, Shield, DollarSign } from 'lucide-react';
 import { Notification } from '../types';
 
 interface NotificationsProps {

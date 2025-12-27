@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Shield, CheckCircle, XCircle, Clock, AlertTriangle, Download, Award } from 'lucide-react';
 import { ComplianceCheck, Loan } from '../types';
 
